@@ -35,7 +35,6 @@ class MasterNode:
         self.map_fn = None
         self.reduce_fn = None
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
         self.log_format = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         self.log_directory = "./mr_logging/" 
 
@@ -48,10 +47,13 @@ class MasterNode:
         self.logger.info(f"Creating log file: {log_file}")
         file_handler = logging.FileHandler(log_file, mode='w')
         file_handler.setFormatter(self.log_format)
+        
+        # Remove all handlers associated with the logger object.
+        for handler in self.logger.handlers:
+            self.logger.removeHandler(handler)
+        
+        # Add our file_handler to the logger
         self.logger.addHandler(file_handler)
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(100)
-        self.logger.addHandler(console_handler)
         self.logger.info(f"Log file created successfully.")
 
     def init_cluster(self, input_data, map_fn, reduce_fn, output_file):
